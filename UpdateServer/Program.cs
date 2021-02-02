@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace UpdateServer
 {
@@ -9,10 +10,16 @@ namespace UpdateServer
         {
             try
             {
-
+                ConfigInfo configInfo = Parser.Parse(@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt");
                 Process firstProc = new Process();
-                firstProc.StartInfo.FileName = @"C:\Users\User\source\repos\AvailableResourcesCheck\AvailableResourcesCheck\bin\Debug\netcoreapp3.1\AvailableResourcesCheck.exe";
-                firstProc.StartInfo.Arguments = @"C:\Users\User\Desktop\rp_folders\config\config_info.txt C:\Users\User\Desktop\rp_folders\json_test\ C:\Users\User\Desktop\rp_folders\changes\changes.txt";
+                firstProc.StartInfo.FileName = configInfo.AvailableResourcesCheckExeLocation;
+                StringBuilder arguments = new StringBuilder();
+                arguments.Append(configInfo.ConfigInfoForScriptLocation);
+                arguments.Append(" ");
+                arguments.Append(configInfo.JsonFilesFolder);
+                arguments.Append(" ");
+                arguments.Append(configInfo.WhereToSaveChangedResources);
+                firstProc.StartInfo.Arguments = arguments.ToString();
                 firstProc.EnableRaisingEvents = true;
 
                 firstProc.Start();

@@ -27,12 +27,17 @@ namespace UpdateServer
                 firstProc.WaitForExit();
 
                 //You may want to perform different actions depending on the exit code.
-                Console.WriteLine("First process exited: " + firstProc.ExitCode);               
+                Console.WriteLine("First process exited: " + firstProc.ExitCode);
 
+            }
+            catch (InvalidParamInConfigFileException ex)
+            {
+                Console.WriteLine("Invalid format of congig info txt file!");
+                Console.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred!!!: " + ex.Message);
+                Console.WriteLine(ex.Message);
                 return;
             }
         }

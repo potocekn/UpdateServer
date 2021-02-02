@@ -7,18 +7,18 @@ namespace UpdateServer
     class Program
     {
         static void Main(string[] args)
-        {
+        {         
             try
             {
                 ConfigInfo configInfo = Parser.Parse(@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt");
                 Process recourceCheckProcess = new Process();
-                recourceCheckProcess.StartInfo.FileName = configInfo.AvailableResourcesCheckExeLocation;
+                recourceCheckProcess.StartInfo.FileName = configInfo.ScriptExeLocation;
                 StringBuilder arguments = new StringBuilder();
-                arguments.Append(configInfo.ConfigInfoForScriptLocation);
+                arguments.Append(configInfo.ScriptConfigFileLocation);
                 arguments.Append(" ");
-                arguments.Append(configInfo.JsonFilesFolder);
+                arguments.Append(configInfo.JsonFilesDestinationFolder);
                 arguments.Append(" ");
-                arguments.Append(configInfo.WhereToSaveChangedResources);
+                arguments.Append(configInfo.DetectedChangesFileLocation);
                 recourceCheckProcess.StartInfo.Arguments = arguments.ToString();
                 recourceCheckProcess.EnableRaisingEvents = true;
 

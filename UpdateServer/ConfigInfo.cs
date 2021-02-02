@@ -6,10 +6,10 @@ namespace UpdateServer
 {
     class ConfigInfo
     {
-        public string AvailableResourcesCheckExeLocation { get; set; }
-        public string ConfigInfoForScriptLocation { get; set; }
-        public string JsonFilesFolder { get; set; }
-        public string WhereToSaveChangedResources{ get; set; }
+        public string ScriptExeLocation { get; set; }
+        public string ScriptConfigFileLocation { get; set; }
+        public string JsonFilesDestinationFolder { get; set; }
+        public string DetectedChangesFileLocation { get; set; }
                
     }
 }

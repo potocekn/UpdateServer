@@ -16,22 +16,29 @@ namespace UpdateServer
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    string beginning = line.Split("=")[0].Trim();
-                    string param = line.Split("=")[1].Trim();
+                    if (!line.Contains("\": \""))
+                    {
+                        continue;
+                    }
+
+                    string beginningBefore = line.Split(": ")[0].Trim();
+                    string beginning = beginningBefore.Substring(1, beginningBefore.Length - 2);
+                    string paramBefore = line.Split(": ")[1].Trim();
+                    string param = paramBefore.Substring(1, paramBefore.Length - 3);
 
                     switch (beginning)
                     {
-                        case "availableResourcesCheckExeLocation": 
-                            result.AvailableResourcesCheckExeLocation = param;
+                        case "ScriptExeLocation": 
+                            result.ScriptExeLocation = param;
                             break;
-                        case "configInfo":
-                            result.ConfigInfoForScriptLocation = param;
+                        case "ScriptConfigFileLocation":
+                            result.ScriptConfigFileLocation = param;
                             break;
-                        case "jsonLocation":
-                            result.JsonFilesFolder = param;
+                        case "JsonFilesDestinationFolder":
+                            result.JsonFilesDestinationFolder = param;
                             break;
-                        case "whereToSaveChanges":
-                            result.WhereToSaveChangedResources = param;
+                        case "DetectedChangesFileLocation":
+                            result.DetectedChangesFileLocation = param;
                             break;
                         default:
                             throw new InvalidParamInConfigFileException(beginning);                            

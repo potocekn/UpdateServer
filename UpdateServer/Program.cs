@@ -32,12 +32,23 @@ namespace UpdateServer
             {
                 Console.WriteLine("Invalid format of congig info txt file!");
                 Console.WriteLine(ex.Message);
+                return;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return;
             }
+
+            DateTime startTime = DateTime.UtcNow;
+            int durationInMinutes = 10;
+            TimeSpan breakDuration = TimeSpan.FromMinutes(durationInMinutes);
+            Console.WriteLine(startTime);
+            while (DateTime.UtcNow - startTime < breakDuration)
+            { 
+                //will be taking care of clients
+            }
+            Console.WriteLine(DateTime.Now);
         }
     }
 }

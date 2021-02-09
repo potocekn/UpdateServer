@@ -34,8 +34,8 @@ namespace UpdateServer
                         case "ScriptConfigFileLocation":
                             result.ScriptConfigFileLocation = param;
                             break;
-                        case "JsonFilesDestinationFolder":
-                            result.JsonFilesDestinationFolder = param;
+                        case "TxtFilesDestinationFolder":
+                            result.TxtFilesDestinationFolder = param;
                             break;
                         case "DetectedChangesFileLocation":
                             result.DetectedChangesFileLocation = param;

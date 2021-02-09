@@ -60,14 +60,14 @@ namespace UpdateServer
 
                     // Read the message and perform different actions  
                     message = cleanMessage(buffer);
+                    Console.WriteLine(message);
 
                     // Save the data sent by the client;  
                     Request request = JsonConvert.DeserializeObject<Request>(message);
-                    Response response;
-
+                   
                     switch (request.Type)
                     {
-                        case RequestType.ResourcesForLanguages:
+                        case RequestType.ResourcesForLanguages:                            
                             HandleResourcesForLanguagesRequest(request.Params, sender, configInfo);
                             break;
                         case RequestType.ChangedLanguages:
@@ -118,7 +118,7 @@ namespace UpdateServer
                 }
             }
 
-            Response response = new ResponseChangedLanguages(ResponseStatus.OK, changed);
+            ResponseChangedLanguages response = new ResponseChangedLanguages(ResponseStatus.OK, RequestType.ChangedLanguages, changed);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
             sender.GetStream().Write(bytes, 0, bytes.Length);
         }
@@ -143,7 +143,7 @@ namespace UpdateServer
                 }                
             }
 
-            Response response = new ResponseResourcesForLanguages(ResponseStatus.OK, resourcesForLanguages);
+            ResponseResourcesForLanguages response = new ResponseResourcesForLanguages(ResponseStatus.OK, RequestType.ResourcesForLanguages, resourcesForLanguages);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
             sender.GetStream().Write(bytes, 0, bytes.Length);
         }

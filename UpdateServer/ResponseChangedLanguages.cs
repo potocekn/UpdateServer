@@ -6,16 +6,10 @@ namespace UpdateServer
 {
     class ResponseChangedLanguages: Response
     {
-       List<string> ChangedLanguages { get; }
+        public List<string> ChangedLanguages { get; set; }
+           
 
-        public ResponseChangedLanguages(ResponseStatus status)
-        {
-            Status = status;
-            Type = RequestType.ChangedLanguages;
-            ChangedLanguages = new List<string>();
-        }
-
-        public ResponseChangedLanguages(ResponseStatus status, List<string> parameters)
+        public ResponseChangedLanguages(ResponseStatus status, RequestType type, List<string> parameters)
         {
             Status = status;
             Type = RequestType.ChangedLanguages;

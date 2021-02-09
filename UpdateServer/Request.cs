@@ -6,8 +6,8 @@ namespace UpdateServer
 {
     class Request
     {
-        public RequestType Type { get; }
-        public List<string> Params { get; }
+        public RequestType Type { get; set; }
+        public List<string> Params { get; set; }
 
         public Request(RequestType type, List<string> parameters) 
         {

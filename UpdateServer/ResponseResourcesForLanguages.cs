@@ -6,16 +6,9 @@ namespace UpdateServer
 {
     class ResponseResourcesForLanguages: Response
     {
-        Dictionary<string, List<string>> ResourcesForLanguages { get; }
+        public Dictionary<string, List<string>> ResourcesForLanguages { get; set; }
 
-        public ResponseResourcesForLanguages(ResponseStatus status)
-        {
-            Status = status;
-            Type = RequestType.ResourcesForLanguages;
-            ResourcesForLanguages = new Dictionary<string, List<string>>();
-        }
-
-        public ResponseResourcesForLanguages(ResponseStatus status, Dictionary<string, List<string>> parameters)
+        public ResponseResourcesForLanguages(ResponseStatus status, RequestType type, Dictionary<string, List<string>> parameters)
         {
             Status = status;
             Type = RequestType.ResourcesForLanguages; 

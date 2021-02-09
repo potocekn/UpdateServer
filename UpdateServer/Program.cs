@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace UpdateServer
 {
@@ -16,7 +21,7 @@ namespace UpdateServer
                 StringBuilder arguments = new StringBuilder();
                 arguments.Append(configInfo.ScriptConfigFileLocation);
                 arguments.Append(" ");
-                arguments.Append(configInfo.JsonFilesDestinationFolder);
+                arguments.Append(configInfo.TxtFilesDestinationFolder);
                 arguments.Append(" ");
                 arguments.Append(configInfo.DetectedChangesFileLocation);
                 recourceCheckProcess.StartInfo.Arguments = arguments.ToString();
@@ -26,6 +31,56 @@ namespace UpdateServer
                 recourceCheckProcess.WaitForExit();
                                 
                 Console.WriteLine("Resource check process exited: " + recourceCheckProcess.ExitCode);
+
+                DateTime startTime = DateTime.UtcNow;
+                int durationInMinutes = 10;
+                TimeSpan breakDuration = TimeSpan.FromMinutes(durationInMinutes);
+                Console.WriteLine(startTime);
+
+                //here starts server for some time
+                IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, 1234);
+                TcpListener listener = new TcpListener(ep);
+                listener.Start();
+
+                Console.WriteLine(@" 
+            ===================================================  
+                   Started listening requests at: {0}:{1}  
+            ===================================================",
+                ep.Address, ep.Port);
+
+                while (DateTime.UtcNow - startTime < breakDuration)
+                {
+                    const int bytesize = 1024 * 1024;
+
+                    string message = null;
+                    byte[] buffer = new byte[bytesize];
+
+                    var sender = listener.AcceptTcpClient();
+                    sender.GetStream().Read(buffer, 0, bytesize);
+
+                    // Read the message and perform different actions  
+                    message = cleanMessage(buffer);
+
+                    // Save the data sent by the client;  
+                    Request request = JsonConvert.DeserializeObject<Request>(message);
+                    Response response;
+
+                    switch (request.Type)
+                    {
+                        case RequestType.ResourcesForLanguages:
+                            HandleResourcesForLanguagesRequest(request.Params, sender, configInfo);
+                            break;
+                        case RequestType.ChangedLanguages:
+                            HandleChangedLanguagesRequest(request.Params, sender, configInfo);
+                            break;
+                        default:
+                            HandleUnknownTypeRequest(sender);
+                            break;
+                    }
+
+                }
+
+                Console.WriteLine(DateTime.Now);
 
             }
             catch (InvalidParamInConfigFileException ex)
@@ -38,17 +93,76 @@ namespace UpdateServer
             {
                 Console.WriteLine(ex.Message);
                 return;
+            }           
+        }
+
+        private static void HandleUnknownTypeRequest(TcpClient sender)
+        {
+            Response response = new ResponseUnknown();
+            byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
+            sender.GetStream().Write(bytes, 0, bytes.Length);
+        }
+
+        private static void HandleChangedLanguagesRequest(List<string> senderLanguages, TcpClient sender, ConfigInfo configInfo)
+        {
+            List<string> changed = new List<string>();
+            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (senderLanguages.Contains(line.Trim()))
+                    {
+                        changed.Add(line.Trim());
+                    }
+                }
             }
 
-            DateTime startTime = DateTime.UtcNow;
-            int durationInMinutes = 10;
-            TimeSpan breakDuration = TimeSpan.FromMinutes(durationInMinutes);
-            Console.WriteLine(startTime);
-            while (DateTime.UtcNow - startTime < breakDuration)
-            { 
-                //will be taking care of clients
-            }
-            Console.WriteLine(DateTime.Now);
+            Response response = new ResponseChangedLanguages(ResponseStatus.OK, changed);
+            byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
+            sender.GetStream().Write(bytes, 0, bytes.Length);
         }
+
+        private static void HandleResourcesForLanguagesRequest(List<string> languages, TcpClient sender, ConfigInfo configInfo)
+        {
+            Dictionary<string, List<string>> resourcesForLanguages = new Dictionary<string, List<string>>();
+            foreach (var language in languages)
+            {
+                if (File.Exists(configInfo.TxtFilesDestinationFolder + language + ".txt"))
+                {
+                    using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.TxtFilesDestinationFolder + language + ".txt"))
+                    {
+                        List<string> resources = new List<string>();
+                        string line;
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            resources.Add(line.Trim());
+                        }
+                        resourcesForLanguages.Add(language, resources);
+                    }
+                }                
+            }
+
+            Response response = new ResponseResourcesForLanguages(ResponseStatus.OK, resourcesForLanguages);
+            byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
+            sender.GetStream().Write(bytes, 0, bytes.Length);
+        }
+
+        private static string cleanMessage(byte[] bytes)
+        {
+            string message = Encoding.Unicode.GetString(bytes);
+
+            string messageToPrint = null;
+            foreach (var nullChar in message)
+            {
+                if (nullChar != '\0')
+                {
+                    messageToPrint += nullChar;
+                }
+            }
+            return messageToPrint;
+        }
+
+
     }
 }

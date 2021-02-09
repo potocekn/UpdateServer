@@ -6,7 +6,7 @@ namespace UpdateServer
 {
     public enum  RequestType
     {
-        ResourcesForLanguages,
-        ChangedLanguages
+        RESOURCES_FOR_LANGUAGES,
+        CHANGED_LANGUAGES
     }
 }

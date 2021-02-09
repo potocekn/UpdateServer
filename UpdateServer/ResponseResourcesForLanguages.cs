@@ -11,7 +11,7 @@ namespace UpdateServer
         public ResponseResourcesForLanguages(ResponseStatus status, RequestType type, Dictionary<string, List<string>> parameters)
         {
             Status = status;
-            Type = RequestType.ResourcesForLanguages; 
+            Type = RequestType.RESOURCES_FOR_LANGUAGES; 
             ResourcesForLanguages = parameters;
         }
     }

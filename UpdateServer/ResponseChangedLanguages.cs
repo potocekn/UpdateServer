@@ -12,7 +12,7 @@ namespace UpdateServer
         public ResponseChangedLanguages(ResponseStatus status, RequestType type, List<string> parameters)
         {
             Status = status;
-            Type = RequestType.ChangedLanguages;
+            Type = RequestType.CHANGED_LANGUAGES;
             ChangedLanguages = parameters;
         }
     }

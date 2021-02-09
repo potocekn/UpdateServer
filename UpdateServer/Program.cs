@@ -16,21 +16,21 @@ namespace UpdateServer
             try
             {
                 ConfigInfo configInfo = Parser.Parse(@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt");
-                Process recourceCheckProcess = new Process();
-                recourceCheckProcess.StartInfo.FileName = configInfo.ScriptExeLocation;
+                Process resourceCheckProcess = new Process();
+                resourceCheckProcess.StartInfo.FileName = configInfo.ScriptExeLocation;
                 StringBuilder arguments = new StringBuilder();
                 arguments.Append(configInfo.ScriptConfigFileLocation);
                 arguments.Append(" ");
                 arguments.Append(configInfo.TxtFilesDestinationFolder);
                 arguments.Append(" ");
                 arguments.Append(configInfo.DetectedChangesFileLocation);
-                recourceCheckProcess.StartInfo.Arguments = arguments.ToString();
-                recourceCheckProcess.EnableRaisingEvents = true;
+                resourceCheckProcess.StartInfo.Arguments = arguments.ToString();
+                resourceCheckProcess.EnableRaisingEvents = true;
 
-                recourceCheckProcess.Start();
-                recourceCheckProcess.WaitForExit();
+                resourceCheckProcess.Start();
+                resourceCheckProcess.WaitForExit();
                                 
-                Console.WriteLine("Resource check process exited: " + recourceCheckProcess.ExitCode);
+                Console.WriteLine("Resource check process exited: " + resourceCheckProcess.ExitCode);
 
                 DateTime startTime = DateTime.UtcNow;
                 int durationInMinutes = 10;
@@ -67,10 +67,10 @@ namespace UpdateServer
                    
                     switch (request.Type)
                     {
-                        case RequestType.ResourcesForLanguages:                            
+                        case RequestType.RESOURCES_FOR_LANGUAGES:                            
                             HandleResourcesForLanguagesRequest(request.Params, sender, configInfo);
                             break;
-                        case RequestType.ChangedLanguages:
+                        case RequestType.CHANGED_LANGUAGES:
                             HandleChangedLanguagesRequest(request.Params, sender, configInfo);
                             break;
                         default:
@@ -118,7 +118,7 @@ namespace UpdateServer
                 }
             }
 
-            ResponseChangedLanguages response = new ResponseChangedLanguages(ResponseStatus.OK, RequestType.ChangedLanguages, changed);
+            ResponseChangedLanguages response = new ResponseChangedLanguages(ResponseStatus.OK, RequestType.CHANGED_LANGUAGES, changed);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
             sender.GetStream().Write(bytes, 0, bytes.Length);
         }
@@ -143,7 +143,7 @@ namespace UpdateServer
                 }                
             }
 
-            ResponseResourcesForLanguages response = new ResponseResourcesForLanguages(ResponseStatus.OK, RequestType.ResourcesForLanguages, resourcesForLanguages);
+            ResponseResourcesForLanguages response = new ResponseResourcesForLanguages(ResponseStatus.OK, RequestType.RESOURCES_FOR_LANGUAGES, resourcesForLanguages);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
             sender.GetStream().Write(bytes, 0, bytes.Length);
         }

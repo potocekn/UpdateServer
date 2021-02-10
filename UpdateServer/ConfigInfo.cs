@@ -10,6 +10,8 @@ namespace UpdateServer
         public string ScriptConfigFileLocation { get; set; }
         public string TxtFilesDestinationFolder { get; set; }
         public string DetectedChangesFileLocation { get; set; }
+        public string ChangesTxtFile { get; set; }
+        public string LanguagesTxtFile { get; set; }
                
     }
 }

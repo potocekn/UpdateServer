@@ -23,7 +23,7 @@ namespace UpdateServer
                 arguments.Append(" ");
                 arguments.Append(configInfo.TxtFilesDestinationFolder);
                 arguments.Append(" ");
-                arguments.Append(configInfo.DetectedChangesFileLocation);
+                arguments.Append(configInfo.ChangesTxtFile);
                 resourceCheckProcess.StartInfo.Arguments = arguments.ToString();
                 resourceCheckProcess.EnableRaisingEvents = true;
 
@@ -73,6 +73,9 @@ namespace UpdateServer
                         case RequestType.CHANGED_LANGUAGES:
                             HandleChangedLanguagesRequest(request.Params, sender, configInfo);
                             break;
+                        case RequestType.ALL_AVAILABLE_LANGUAGES:
+                            HandleAllAvailableLanguages(sender,configInfo);
+                            break;
                         default:
                             HandleUnknownTypeRequest(sender);
                             break;
@@ -96,6 +99,23 @@ namespace UpdateServer
             }           
         }
 
+        private static void HandleAllAvailableLanguages(TcpClient sender, ConfigInfo configInfo)
+        {
+            List<string> languages = new List<string>();
+            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation + "languages.txt"))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    languages.Add(line.Trim());                   
+                }
+            }
+
+            ResponseAllAvailableLanguages response = new ResponseAllAvailableLanguages(ResponseStatus.OK, RequestType.ALL_AVAILABLE_LANGUAGES, languages);
+            byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
+            sender.GetStream().Write(bytes, 0, bytes.Length);
+        }
+
         private static void HandleUnknownTypeRequest(TcpClient sender)
         {
             Response response = new ResponseUnknown();
@@ -106,7 +126,7 @@ namespace UpdateServer
         private static void HandleChangedLanguagesRequest(List<string> senderLanguages, TcpClient sender, ConfigInfo configInfo)
         {
             List<string> changed = new List<string>();
-            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation))
+            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation + "changes.txt"))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)

@@ -46,6 +46,9 @@ namespace UpdateServer
                 }
             }
 
+            result.ChangesTxtFile = result.DetectedChangesFileLocation + "changes.txt";
+            result.LanguagesTxtFile = result.DetectedChangesFileLocation + "languages.txt";
+
             return result;
         }
     }

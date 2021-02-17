@@ -15,7 +15,7 @@ namespace UpdateServer
         {         
             try
             {
-                ConfigInfo configInfo = Parser.Parse(@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt");
+                ConfigInfo configInfo = Parser.Parse(args[0]); //@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt"
                 Process resourceCheckProcess = new Process();
                 resourceCheckProcess.StartInfo.FileName = configInfo.ScriptExeLocation;
                 StringBuilder arguments = new StringBuilder();
@@ -125,6 +125,12 @@ namespace UpdateServer
 
         private static void HandleChangedLanguagesRequest(List<string> senderLanguages, TcpClient sender, ConfigInfo configInfo)
         {
+            if (senderLanguages == null)
+            {
+                HandleUnknownTypeRequest(sender);
+                return;
+            }
+
             List<string> changed = new List<string>();
             using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation + "changes.txt"))
             {
@@ -145,6 +151,12 @@ namespace UpdateServer
 
         private static void HandleResourcesForLanguagesRequest(List<string> languages, TcpClient sender, ConfigInfo configInfo)
         {
+            if (languages == null)
+            {
+                HandleUnknownTypeRequest(sender);
+                return;
+            }
+
             Dictionary<string, List<string>> resourcesForLanguages = new Dictionary<string, List<string>>();
             foreach (var language in languages)
             {

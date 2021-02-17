@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UpdateServer": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\User\\Desktop\\rp_folders\\config\\config_info_server.txt"
+    }
+  }
+}

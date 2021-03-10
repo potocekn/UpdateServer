@@ -15,13 +15,13 @@ namespace UpdateServer
         {         
             try
             {
-                ConfigInfo configInfo = Parser.Parse(args[0]); //@"C:\Users\User\Desktop\rp_folders\config\config_info_server.txt"
+                ConfigInfo configInfo = Parser.Parse(args[0]); 
                 Process resourceCheckProcess = new Process();
                 resourceCheckProcess.StartInfo.FileName = configInfo.ScriptExeLocation;
                 StringBuilder arguments = new StringBuilder();
                 arguments.Append(configInfo.ScriptConfigFileLocation);
                 arguments.Append(" ");
-                arguments.Append(configInfo.TxtFilesDestinationFolder);
+                arguments.Append(configInfo.JsonFilesDestinationFolder);
                 arguments.Append(" ");
                 arguments.Append(configInfo.ChangesTxtFile);
                 resourceCheckProcess.StartInfo.Arguments = arguments.ToString();
@@ -102,14 +102,11 @@ namespace UpdateServer
         private static void HandleAllAvailableLanguages(TcpClient sender, ConfigInfo configInfo)
         {
             List<string> languages = new List<string>();
-            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation + "languages.txt"))
+            string fileName = configInfo.DetectedChangesFileLocation + "languages.json";
+            if (File.Exists(fileName))
             {
-                string line;
-                while ((line = file.ReadLine()) != null)
-                {
-                    languages.Add(line.Trim());                   
-                }
-            }
+                languages = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(fileName).Trim());
+            }            
 
             ResponseAllAvailableLanguages response = new ResponseAllAvailableLanguages(ResponseStatus.OK, RequestType.ALL_AVAILABLE_LANGUAGES, languages);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
@@ -132,18 +129,12 @@ namespace UpdateServer
             }
 
             List<string> changed = new List<string>();
-            using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.DetectedChangesFileLocation + "changes.txt"))
+            string fileName = configInfo.DetectedChangesFileLocation + "changes.json";
+            if (File.Exists(fileName))
             {
-                string line;
-                while ((line = file.ReadLine()) != null)
-                {
-                    if (senderLanguages.Contains(line.Trim()))
-                    {
-                        changed.Add(line.Trim());
-                    }
-                }
+                changed = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(fileName).Trim());
             }
-
+            
             ResponseChangedLanguages response = new ResponseChangedLanguages(ResponseStatus.OK, RequestType.CHANGED_LANGUAGES, changed);
             byte[] bytes = Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(response));
             sender.GetStream().Write(bytes, 0, bytes.Length);
@@ -160,18 +151,11 @@ namespace UpdateServer
             Dictionary<string, List<string>> resourcesForLanguages = new Dictionary<string, List<string>>();
             foreach (var language in languages)
             {
-                if (File.Exists(configInfo.TxtFilesDestinationFolder + language + ".txt"))
+                string fileName = configInfo.JsonFilesDestinationFolder + language + ".json";
+                if (File.Exists(fileName))
                 {
-                    using (System.IO.StreamReader file = new System.IO.StreamReader(configInfo.TxtFilesDestinationFolder + language + ".txt"))
-                    {
-                        List<string> resources = new List<string>();
-                        string line;
-                        while ((line = file.ReadLine()) != null)
-                        {
-                            resources.Add(line.Trim());
-                        }
-                        resourcesForLanguages.Add(language, resources);
-                    }
+                    LanguageWithResources lwr = JsonConvert.DeserializeObject<LanguageWithResources>(File.ReadAllText(fileName).Trim());
+                    resourcesForLanguages.Add(lwr.Name, lwr.Resources);                  
                 }                
             }
 

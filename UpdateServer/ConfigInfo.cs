@@ -8,7 +8,7 @@ namespace UpdateServer
     {
         public string ScriptExeLocation { get; set; }
         public string ScriptConfigFileLocation { get; set; }
-        public string TxtFilesDestinationFolder { get; set; }
+        public string JsonFilesDestinationFolder { get; set; }
         public string DetectedChangesFileLocation { get; set; }
         public string ChangesTxtFile { get; set; }
         public string LanguagesTxtFile { get; set; }

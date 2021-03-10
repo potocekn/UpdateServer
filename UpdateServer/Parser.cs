@@ -34,8 +34,8 @@ namespace UpdateServer
                         case "ScriptConfigFileLocation":
                             result.ScriptConfigFileLocation = param;
                             break;
-                        case "TxtFilesDestinationFolder":
-                            result.TxtFilesDestinationFolder = param;
+                        case "JsonFilesDestinationFolder":
+                            result.JsonFilesDestinationFolder = param;
                             break;
                         case "DetectedChangesFileLocation":
                             result.DetectedChangesFileLocation = param;
@@ -46,8 +46,8 @@ namespace UpdateServer
                 }
             }
 
-            result.ChangesTxtFile = result.DetectedChangesFileLocation + "changes.txt";
-            result.LanguagesTxtFile = result.DetectedChangesFileLocation + "languages.txt";
+            result.ChangesTxtFile = result.DetectedChangesFileLocation + "changes.json";
+            result.LanguagesTxtFile = result.DetectedChangesFileLocation + "languages.json";
 
             return result;
         }
